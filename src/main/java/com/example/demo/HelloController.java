@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
@@ -46,5 +47,11 @@ public class HelloController {
     public String calculateVolume(@PathVariable int length, @PathVariable int width, @PathVariable int height) {
         int volume = length * width * height;
         return String.format("The volume of a %sx%sx%s rectangle is %d", length, width, height, volume);
+    }
+
+
+    @PostMapping(value = "/math/area", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public String calculateArea(AreaObj areaObj) {
+        return areaObj.calculateArea();
     }
 }
