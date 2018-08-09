@@ -5,6 +5,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -54,4 +59,48 @@ public class HelloController {
     public String calculateArea(AreaObj areaObj) {
         return areaObj.calculateArea();
     }
+
+
+    @GetMapping("/flights")
+    public List<Flight> getFlights() {
+        String departs = "2017-04-21 14:34";
+        Flight flight1 = new Flight();
+        Flight.Passenger passenger = new Flight.Passenger();
+        passenger.setFirstName("Some name");
+        passenger.setLastName("Some other name");
+        Flight.PlaneTicket ticket = new Flight.PlaneTicket();
+        ticket.setPassenger(passenger);
+        ticket.setPrice(200);
+        flight1.setDeparts(new SimpleDateFormat("yyyy-MM-dd").parse(departs, new ParsePosition(0)));
+        flight1.setTickets(Arrays.asList(ticket));
+
+        String departs2 = "2017-04-21 14:34";
+        Flight flight2 = new Flight();
+        Flight.Passenger passenger2 = new Flight.Passenger();
+        passenger2.setFirstName("Some other name");
+        passenger2.setLastName("");
+        Flight.PlaneTicket ticket2 = new Flight.PlaneTicket();
+        ticket2.setPassenger(passenger2);
+        ticket2.setPrice(400);
+        flight2.setDeparts(new SimpleDateFormat("yyyy-MM-dd").parse(departs2, new ParsePosition(0)));
+        flight2.setTickets(Arrays.asList(ticket2));
+
+        return Arrays.asList(flight1, flight2);
+    }
+
+    @GetMapping("/flights/flight")
+    public Flight getFlight() {
+        String departs = "2017-04-21 14:34";
+        Flight result = new Flight();
+        Flight.Passenger passenger = new Flight.Passenger();
+        passenger.setFirstName("Some name");
+        passenger.setLastName("Some other name");
+        Flight.PlaneTicket ticket = new Flight.PlaneTicket();
+        ticket.setPassenger(passenger);
+        ticket.setPrice(200);
+        result.setDeparts(new SimpleDateFormat("yyyy-MM-dd").parse(departs, new ParsePosition(0)));
+        result.setTickets(Arrays.asList(ticket));
+        return result;
+    }
+
 }

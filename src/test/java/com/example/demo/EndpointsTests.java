@@ -78,4 +78,54 @@ public class EndpointsTests {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Invalid"));
     }
+
+    @Test
+    public void testFlightCall() throws Exception {
+        this.mockMvc.perform(get("/flights/flight").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\n" +
+                        "    \"departs\": \"2017-04-21 6:0\",\n" +
+                        "    \"tickets\": [\n" +
+                        "        {\n" +
+                        "            \"passenger\": {\n" +
+                        "                \"firstName\": \"Some name\",\n" +
+                        "                \"lastName\": \"Some other name\"\n" +
+                        "            },\n" +
+                        "            \"price\": 200\n" +
+                        "        }\n" +
+                        "    ]\n" +
+                        "}"));
+    }
+
+    @Test
+    public void testFlightsCall() throws Exception {
+        this.mockMvc.perform(get("/flights").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[\n" +
+                        "    {\n" +
+                        "        \"departs\": \"2017-04-21 6:0\",\n" +
+                        "        \"tickets\": [\n" +
+                        "            {\n" +
+                        "                \"passenger\": {\n" +
+                        "                    \"firstName\": \"Some name\",\n" +
+                        "                    \"lastName\": \"Some other name\"\n" +
+                        "                },\n" +
+                        "                \"price\": 200\n" +
+                        "            }\n" +
+                        "        ]\n" +
+                        "    },\n" +
+                        "    {\n" +
+                        "        \"departs\": \"2017-04-21 6:0\",\n" +
+                        "        \"tickets\": [\n" +
+                        "            {\n" +
+                        "                \"passenger\": {\n" +
+                        "                    \"firstName\": \"Some other name\",\n" +
+                        "                    \"lastName\": \"\"\n" +
+                        "                },\n" +
+                        "                \"price\": 400\n" +
+                        "            }\n" +
+                        "        ]\n" +
+                        "    }\n" +
+                        "]"));
+    }
 }
