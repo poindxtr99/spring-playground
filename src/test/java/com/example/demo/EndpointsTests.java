@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+
+import java.lang.reflect.Array;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -127,5 +135,107 @@ public class EndpointsTests {
                         "        ]\n" +
                         "    }\n" +
                         "]"));
+    }
+
+    @Test
+    public void testTicketTotalLiteral() throws  Exception {
+        MockHttpServletRequestBuilder request = post("/flights/tickets/total")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\n" +
+                        "    \"tickets\": [\n" +
+                        "      {\n" +
+                        "        \"passenger\": {\n" +
+                        "          \"firstName\": \"Some name\",\n" +
+                        "          \"lastName\": \"Some other name\"\n" +
+                        "        },\n" +
+                        "        \"price\": 200\n" +
+                        "      },\n" +
+                        "      {\n" +
+                        "        \"passenger\": {\n" +
+                        "          \"firstName\": \"Name B\",\n" +
+                        "          \"lastName\": \"Name C\"\n" +
+                        "        },\n" +
+                        "        \"price\": 150\n" +
+                        "      }\n" +
+                        "    ]\n" +
+                        "  }");
+
+        this.mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(content().json("{" +
+                        "  \"result\": 350" +
+                        "}"));
+    }
+
+    @Test
+    public void testTicketTotalSerialized() throws  Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        HashMap<String, Object> passenger1 = new HashMap<String, Object>(){
+            {
+                put("firstName", "Hercules");
+                put("lastName", 57);
+            }
+        };
+        HashMap<String, Object> passenger2 = new HashMap<String, Object>(){
+            {
+                put("firstName", "She-Ra");
+                put("lastName", 37);
+            }
+        };
+
+        HashMap<String, Object> ticket1 = new HashMap<String, Object>(){
+            {
+                put("passenger", passenger1);
+                put("price", 200);
+            }
+        };
+        HashMap<String, Object> ticket2 = new HashMap<String, Object>(){
+            {
+                put("passenger", passenger2);
+                put("price", 150);
+            }
+        };
+
+        Object[] ticketData = {ticket1, ticket2};
+        HashMap<String, Object> tickets = new HashMap<String, Object>(){
+            {
+                put("tickets", ticketData);
+            }
+        };
+
+        String json = objectMapper.writeValueAsString(tickets);
+
+        MockHttpServletRequestBuilder request = post("/flights/tickets/total")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        this.mockMvc.perform(request)
+        .andExpect(status().isOk())
+        .andExpect(content().json("{" +
+                "  \"result\": 350" +
+                "}"));
+    }
+
+    @Test
+    public void testTicketTotalFileFixture() throws  Exception {
+        String json = getJSON("/ticketdata.json");
+
+        MockHttpServletRequestBuilder request = post("/flights/tickets/total")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        this.mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(content().json("{" +
+                        "  \"result\": 350" +
+                        "}"));
+    }
+
+
+    private String getJSON(String path) throws Exception {
+        URL url = this.getClass().getResource(path);
+        String file = url.getFile();
+
+        return new String(Files.readAllBytes(Paths.get(file)));
     }
 }

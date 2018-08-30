@@ -103,4 +103,10 @@ public class HelloController {
         return result;
     }
 
+    @PostMapping("/flights/tickets/total")
+    public String sumTickets(@RequestBody FlightTicket flightTicket){
+        return String.format("{\n" +
+                "               \"result\": %d\n" +
+                              "}", flightTicket.ticketTotal());
+    }
 }
